@@ -5,18 +5,26 @@ import 'express-async-errors';
 import { handleApplicationErrors } from './middlewares';
 import { loadEnv, connectDb, disconnectDB } from './config';
 
+import { scrappingRouter } from './router';
+
+var morgan = require('morgan');
+
 loadEnv();
 
 const app = express();
-app.use(cors()).use(express.json()).use(handleApplicationErrors);
+app.all('/*', morgan('dev'))
+    .use(cors())
+    .use('/scrap', scrappingRouter)
+    .use(express.json())
+    .use(handleApplicationErrors);
 
-export function init(): Promise<Express> {
+export const init = (): Promise<Express> => {
     connectDb();
     return Promise.resolve(app);
-}
+};
 
-export async function close(): Promise<void> {
+export const close = async (): Promise<void> => {
     await disconnectDB();
-}
+};
 
 export default app;
