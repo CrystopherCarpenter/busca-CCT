@@ -32,6 +32,7 @@ const searchIC = async (params) => {
     await searchParams(params, page, context);
 
     await page.locator('#btnPesquisar').click();
+
     await page.waitForSelector('#btnExportar', { timeout: 30000 });
 
     const downloadPromise = page.waitForEvent('download');
