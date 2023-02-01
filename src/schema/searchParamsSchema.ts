@@ -1,7 +1,7 @@
 const Joi = require('joi').extend(require('@joi/date'));
 
 export const searchParamsSchema = Joi.object({
-    baseSearch: { type: Joi.string(), code: Joi.string() },
+    partSearch: { type: Joi.string(), code: Joi.string() },
     categoria: Joi.string(),
     tipo: Joi.string().required(),
     vigencia: Joi.string().required(),
