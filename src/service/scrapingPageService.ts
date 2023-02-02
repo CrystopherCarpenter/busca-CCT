@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { chromium } from 'playwright';
 import { load } from 'cheerio';
 import * as fs from 'fs';
@@ -33,7 +34,7 @@ const getIC = async (params, count: number) => {
         count++;
         await pageClose(browser, context);
 
-        if (count < 3) await getIC(params, count);
+        if (count <= 3) await getIC(params, count);
         return;
     }
 };
@@ -54,10 +55,11 @@ const searchIC = async (params, page, context) => {
 };
 
 const searchParams = async (params, page, context) => {
-    await page.locator('#cboTPRequerimento').selectOption(params.type);
-
     await page.locator('#cboSTVigencia').selectOption(params.validity);
 
+    if (params.type) {
+        await page.locator('#cboTPRequerimento').selectOption(params.type);
+    }
     if (params.partSearch) {
         await page.locator(`#chk${params.partSearch.type}`).click();
         await page
@@ -116,6 +118,7 @@ const searchParams = async (params, page, context) => {
             .locator(`#NR${params.basicSearch.type}`)
             .type(params.basicSearch.code);
     }
+
     return;
 };
 
@@ -138,6 +141,7 @@ const getICNumbers = async (page) => {
     fs.unlink('./ict.html', function (err) {
         if (err) throw err;
     });
+
     await download.delete();
 
     return ICNumbers;

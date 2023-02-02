@@ -1,2 +1,2 @@
 export * from './searchParamsSchema';
-export * from './dataFilterSchema';
+export * from './dataFilteringSchema';

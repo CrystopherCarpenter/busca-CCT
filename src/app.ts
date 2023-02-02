@@ -1,21 +1,18 @@
 import express, { Express } from 'express';
 import cors from 'cors';
 import 'express-async-errors';
-
 import { handleApplicationErrors } from './middlewares';
 import { loadEnv, connectDb, disconnectDB } from './config';
 
-import { scrappingRouter } from './router';
-
-var morgan = require('morgan');
+import { scrapingPageRouter, dataFilteringRouter } from './router';
 
 loadEnv();
 
 const app = express();
-app.all('/*', morgan('dev'))
-    .use(cors())
-    .use('/scrap', scrappingRouter)
+app.use(cors())
     .use(express.json())
+    .use('/scrap', scrapingPageRouter)
+    .use('/filter', dataFilteringRouter)
     .use(handleApplicationErrors);
 
 export const init = (): Promise<Express> => {

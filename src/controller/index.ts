@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
-import { scrapingPageService, scrapingFileService } from '../service';
+import { scrapingPageService, dataFilteringService } from '../service';
 
-export const getData = async (req: Request, res: Response) => {
+export const searchData = async (req: Request, res: Response) => {
     const params = req.body;
     const ICList = await scrapingPageService.getData(params);
 
@@ -9,8 +9,11 @@ export const getData = async (req: Request, res: Response) => {
 };
 
 export const filterData = async (req: Request, res: Response) => {
-    const { IC, params } = req.body;
-    const ICList = await scrapingFileService.dataFilter(IC, params);
+    const { ICList, params } = req.body;
+    const filteredICList = await dataFilteringService.filterData(
+        ICList,
+        params
+    );
 
-    return res.send(ICList);
+    return res.send(filteredICList);
 };

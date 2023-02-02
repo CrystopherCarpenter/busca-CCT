@@ -1,7 +1,7 @@
 import Joi from 'joi';
 
-export const dataFilterSchema = Joi.object({
-    IC: Joi.string().required(),
+export const dataFilteringSchema = Joi.object({
+    ICList: Joi.array().items(Joi.string()).required(),
     params: {
         searchType: Joi.string().required(),
         keywords: Joi.array().items(Joi.string()).required(),
