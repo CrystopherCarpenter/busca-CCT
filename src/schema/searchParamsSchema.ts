@@ -1,22 +1,22 @@
 const Joi = require('joi').extend(require('@joi/date'));
 
 export const searchParamsSchema = Joi.object({
+    type: Joi.string().required(),
+    validity: Joi.string().required(),
     partSearch: { type: Joi.string(), code: Joi.string() },
-    categoria: Joi.string(),
-    tipo: Joi.string().required(),
-    vigencia: Joi.string().required(),
-    UFRegistro: Joi.string(),
+    category: Joi.string(),
+    stateRegistry: Joi.string(),
     dateSearch: {
         type: Joi.string(),
         startDate: Joi.date().format('DD-MM-YYYY'),
         endDate: Joi.date().format('DD-MM-YYYY'),
     },
-    abrangencia: {
+    coverage: {
         type: Joi.array().items(Joi.string()),
-        UF: Joi.array().items(Joi.string()),
-        Municipios: Joi.array().items({
-            UF: Joi.string(),
-            municipio: Joi.string(),
+        state: Joi.array().items(Joi.string()),
+        cities: Joi.array().items({
+            state: Joi.string(),
+            city: Joi.string(),
         }),
     },
     basicSearch: { type: Joi.string(), code: Joi.string() },
