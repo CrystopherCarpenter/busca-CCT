@@ -22,9 +22,8 @@ const pageClose = async (browser, context) => {
 };
 
 const getIC = async (params, count: number) => {
-    const { browser, context, page } = await pageLaunch();
-
     try {
+        const { browser, context, page } = await pageLaunch();
         await searchIC(params, page, context);
         const response = await getICNumbers(page);
         await pageClose(browser, context);
@@ -32,9 +31,8 @@ const getIC = async (params, count: number) => {
         return response;
     } catch {
         count++;
-        await pageClose(browser, context);
 
-        if (count <= 3) await getIC(params, count);
+        if (count < 3) await getIC(params, count);
         return;
     }
 };
