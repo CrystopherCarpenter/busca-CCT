@@ -23,7 +23,9 @@ const pageClose = async (browser, context) => {
 
 const getIC = async (params, count: number) => {
     try {
-        const { browser, context, page } = await pageLaunch();
+        const { browser, context, page } = await pageLaunch({
+            headless: false,
+        });
         await searchIC(params, page, context);
         const response = await getICNumbers(page);
         await pageClose(browser, context);
@@ -45,6 +47,8 @@ const searchIC = async (params, page, context) => {
     await page.waitForSelector('#chkNRCNPJ');
 
     await searchParams(params, page, context);
+
+    await page.screenshot({ path: 'screenshot4.png' });
 
     await page.locator('#btnPesquisar').click();
     await page.waitForSelector('#btnExportar', { timeout: 30000 });
@@ -87,27 +91,41 @@ const searchParams = async (params, page, context) => {
             .type(params.dateSearch.endDate);
     }
     if (params.coverage) {
-        for (const type of params.coverage.type) {
-            await page.locator(`#chk${type}`).click();
-        }
-        for (const state of params.coverage.state) {
-            await page
-                .locator('#cboUFAbrangenciaTerritorial')
-                .selectOption(state);
-            await page.locator('#btnAdicionarUF').click();
-        }
-        for (const { state, city } of params.coverage.cities) {
-            await page
-                .locator('#cboUFAbrangenciaTerritorial')
-                .selectOption(state);
-            const popUpPromise = context.waitForEvent('page');
-            await page.locator('#btnSelecionarMunicipio').click();
-            const popUp = await popUpPromise;
-            await popUp.waitForLoadState();
-            await popUp.getByText(city[0], { exact: true }).click();
-            await popUp.getByText(city, { exact: true }).click();
-            await popUp.getByText('Fechar', { exact: true }).click();
-        }
+        if (params.coverage.type)
+            for (const type of params.coverage.type) {
+                await page.locator(`#chk${type}`).click();
+            }
+        if (params.coverage.state)
+            for (const state of params.coverage.state) {
+                await page
+                    .locator('#cboUFAbrangenciaTerritorial')
+                    .selectOption(state);
+                await page.locator('#btnAdicionarUF').click();
+            }
+        if (params.coverage.cities)
+            for (const { state, city } of params.coverage.cities) {
+                await page
+                    .locator('#cboUFAbrangenciaTerritorial')
+                    .selectOption(state);
+                await page.locator('#btnSelecionarMunicipio').click();
+                await page.waitForSelector(
+                    '#divMunicipiosAbrangenciaTerritorial'
+                );
+                await page
+                    .locator(
+                        '#divMunicipiosAbrangenciaTerritorial > table > tbody > tr > td > div:nth-child(2) > table > tbody > tr > td'
+                    )
+                    .filter({ has: page.getByText(city[0], { exact: true }) })
+                    .click();
+
+                await page.getByText(city, { exact: true }).click();
+                await page.screenshot({ path: 'screenshot3.png' });
+                await page
+                    .locator(
+                        'body > div:nth-child(3) > div.ui-dialog-buttonpane.ui-helper-clearfix > div > button'
+                    )
+                    .click();
+            }
     }
     if (params.basicSearch) {
         await page.locator('#linkConsultaBasica').click();

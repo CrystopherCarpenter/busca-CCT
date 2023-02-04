@@ -3,13 +3,14 @@ import cors from 'cors';
 import 'express-async-errors';
 import { handleApplicationErrors } from './middlewares';
 import { loadEnv, connectDb, disconnectDB } from './config';
-
 import { scrapingPageRouter, dataFilteringRouter } from './router';
+var morgan = require('morgan');
 
 loadEnv();
 
 const app = express();
-app.use(cors())
+app.all('/*', morgan('dev'))
+    .use(cors())
     .use(express.json())
     .use('/scrap', scrapingPageRouter)
     .use('/filter', dataFilteringRouter)
